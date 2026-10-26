@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Check My Rent — Mumbai Rent Analyzer</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    * { font-family: 'Inter', sans-serif; }
+    body { background: #f8fafc; color: #1e293b; }
+
+    /* NAVBAR */
+    .navbar-brand { font-weight: 800; font-size: 1.15rem; }
+    .nav-back { color: #64748b; font-size: .9rem; font-weight: 500; text-decoration: none; }
+    .nav-back:hover { color: #2563eb; }
+
+    /* PAGE HEADER */
+    .page-header { background: linear-gradient(135deg, #2563eb, #0ea5e9); border-radius: 16px; padding: 36px 40px; color: white; margin-bottom: 28px; }
+    .page-header h2 { font-size: 1.9rem; font-weight: 800; letter-spacing: -.5px; }
+    .page-header p { opacity: .85; margin: 0; font-size: .95rem; }
+
+    /* FORM CARD */
+    .form-card { background: white; border-radius: 16px; border: 1px solid #e2e8f0; padding: 32px; }
+    .form-section-title { font-size: .7rem; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; color: #94a3b8; margin-bottom: 16px; margin-top: 24px; }
+    .form-section-title:first-child { margin-top: 0; }
+
+    /* ZONE SELECTOR */
+    .zone-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+    @media (max-width: 768px) { .zone-grid { grid-template-columns: repeat(2, 1fr); } }
+    .zone-option { display: none; }
+    .zone-label {
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 12px 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: all .15s;
+      background: #f8fafc;
+      font-size: .78rem;
+      font-weight: 600;
+      color: #64748b;
+    }
+    .zone-label:hover { border-color: #93c5fd; background: #eff6ff; color: #2563eb; }
+    .zone-option:checked + .zone-label {
+      border-color: #2563eb;
+      background: #eff6ff;
+      color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37,99,235,.15);
+    }
+    .zone-emoji { display: block; font-size: 1.3rem; margin-bottom: 4px; }
+    .zone-price { display: block; font-size: .68rem; font-weight: 500; color: #94a3b8; margin-top: 2px; }
+    .zone-option:checked + .zone-label .zone-price { color: #3b82f6; }
+
+    /* INPUT FIELDS */
+    .form-label { font-weight: 600; font-size: .85rem; color: #374151; margin-bottom: 6px; }
+    .form-control, .form-select {
+      border: 2px solid #e2e8f0; border-radius: 10px; padding: 12px 14px;
+      font-size: .9rem; color: #1e293b; transition: border .15s;
+    }
+    .form-control:focus, .form-select:focus { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,.1); outline: none; }
+
+    /* COUNTER INPUTS */
+    .counter-group { display: flex; align-items: center; gap: 0; border: 2px solid #e2e8f0; border-radius: 10px; overflow: hidden; background: white; }
+    .counter-btn { background: #f8fafc; border: none; width: 44px; height: 48px; font-size: 1.1rem; cursor: pointer; color: #475569; font-weight: 700; transition: background .15s; }
+    .counter-btn:hover { background: #eff6ff; color: #2563eb; }
+    .counter-val { flex: 1; text-align: center; font-weight: 700; font-size: 1rem; color: #1e293b; border: none; outline: none; background: transparent; }
+    .counter-group:focus-within { border-color: #2563eb; box-shadow: 0 0 0 3px rgba(37,99,235,.1); }
+
+    /* PRICE COMPARISON */
+    .compare-card { background: #f8fafc; border: 2px dashed #e2e8f0; border-radius: 12px; padding: 20px; }
+    .compare-card.active { border-style: solid; border-color: #bfdbfe; background: #eff6ff; }
+
+    /* SUBMIT BUTTON */
+    .btn-predict {
+      background: linear-gradient(135deg, #2563eb, #0ea5e9);
+      color: white; border: none; border-radius: 12px;
+      padding: 16px; font-size: 1rem; font-weight: 700;
+      width: 100%; transition: all .2s; letter-spacing: -.2px;
+    }
+    .btn-predict:hover { opacity: .92; transform: translateY(-1px); color: white; }
+
+    /* CSV UPLOAD CARD */
+    .upload-card { background: white; border-radius: 16px; border: 1px solid #e2e8f0; padding: 28px; }
+    .upload-zone { border: 2px dashed #cbd5e1; border-radius: 12px; padding: 32px 20px; text-align: center; cursor: pointer; transition: all .2s; }
+    .upload-zone:hover { border-color: #2563eb; background: #eff6ff; }
+    .upload-zone i { font-size: 2rem; color: #94a3b8; display: block; margin-bottom: 8px; }
+    .btn-upload { background: #f1f5f9; color: #1e293b; border: none; border-radius: 10px; padding: 12px; font-weight: 600; width: 100%; transition: all .2s; }
+    .btn-upload:hover { background: #e2e8f0; }
+
+    /* QUICK TIP */
+    .tip-card { background: #fffbeb; border: 1px solid #fde68a; border-radius: 12px; padding: 16px 20px; }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-light bg-white border-bottom sticky-top" style="padding: 12px 0;">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="/">
+      <span style="font-size:1.4rem;">🏠</span>
+      <span>Mumbai <span style="color:#2563eb;">Rent</span> Analyzer</span>
+    </a>
+    <a href="/" class="nav-back"><i class="bi bi-arrow-left me-1"></i> Back to Dashboard</a>
+  </div>
+</nav>
+
+<div class="container py-4" style="max-width: 960px;">
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div class="row align-items-center">
+      <div class="col">
+        <h2>🔍 Find Your Fair Rent</h2>
+        <p class="mt-2">Fill in your property details below. Our AI will instantly tell you the market rent and whether your price is fair.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="row g-4">
+
+    <!-- LEFT: SINGLE PROPERTY FORM -->
+    <div class="col-lg-7">
+      <div class="form-card">
+        <form action="/predict" method="POST" id="predictForm">
+
+          <!-- ZONE SELECTOR -->
+          <div class="form-section-title">📍 Select Your Zone</div>
+          <div class="zone-grid">
+
+            <div>
+              <input type="radio" name="zone" id="z1" value="South Mumbai" class="zone-option">
+              <label for="z1" class="zone-label">
+                <span class="zone-emoji">🌊</span>
+                South Mumbai
+                <span class="zone-price">₹1.75L avg</span>
+              </label>
+            </div>
+
+            <div>
+              <input type="radio" name="zone" id="z2" value="Central Mumbai" class="zone-option" checked>
+              <label for="z2" class="zone-label">
+                <span class="zone-emoji">🏙️</span>
+                Central Mumbai
+                <span class="zone-price">₹1.16L avg</span>
+              </label>
+            </div>
+
+            <div>
+              <input type="radio" name="zone" id="z3" value="Western Suburbs" class="zone-option">
+              <label for="z3" class="zone-label">
+                <span class="zone-emoji">🏡</span>
+                Western Suburbs
+                <span class="zone-price">₹93K avg</span>
+              </label>
+            </div>
+
+            <div>
+              <input type="radio" name="zone" id="z4" value="Eastern Suburbs" class="zone-option">
+              <label for="z4" class="zone-label">
+                <span class="zone-emoji">🌿</span>
+                Eastern Suburbs
+                <span class="zone-price">₹81K avg</span>
+              </label>
+            </div>
+
+            <div>
+              <input type="radio" name="zone" id="z5" value="Navi Mumbai" class="zone-option">
+              <label for="z5" class="zone-label">
+                <span class="zone-emoji">🌆</span>
+                Navi Mumbai
+                <span class="zone-price">₹58K avg</span>
+              </label>
+            </div>
+
+          </div>
+
+          <!-- AREA -->
+          <div class="form-section-title" style="margin-top: 28px;">📐 Property Size</div>
+          <div class="mb-3">
+            <label class="form-label">Carpet Area (in sq ft)</label>
+            <div class="input-group">
+              <input id="area_input" type="text" inputmode="numeric" pattern="[0-9]*"
+                     name="area_sqft" class="form-control" placeholder="e.g. 850" required
+                     style="border-right: none;">
+              <span class="input-group-text" style="background:#f8fafc; border: 2px solid #e2e8f0; border-left: none; border-radius: 0 10px 10px 0; font-size: .85rem; color: #64748b;">sq ft</span>
+            </div>
+            <div class="mt-1" style="font-size:.78rem; color:#94a3b8;">Studio ≈ 300–500 | 1BHK ≈ 500–750 | 2BHK ≈ 700–1100 | 3BHK ≈ 1000+</div>
+          </div>
+
+          <!-- BEDROOMS + BATHROOMS COUNTERS -->
+          <div class="form-section-title">🛏️ Rooms</div>
+          <div class="row g-3 mb-3">
+            <div class="col-6">
+              <label class="form-label">Bedrooms</label>
+              <div class="counter-group">
+                <button type="button" class="counter-btn" onclick="counterChange('bedrooms', -1)">−</button>
+                <input class="counter-val" type="text" name="bedrooms" id="bedrooms" value="2" readonly>
+                <button type="button" class="counter-btn" onclick="counterChange('bedrooms', 1)">+</button>
+              </div>
+            </div>
+            <div class="col-6">
+              <label class="form-label">Bathrooms</label>
+              <div class="counter-group">
+                <button type="button" class="counter-btn" onclick="counterChange('bathrooms', -1)">−</button>
+                <input class="counter-val" type="text" name="bathrooms" id="bathrooms" value="2" readonly>
+                <button type="button" class="counter-btn" onclick="counterChange('bathrooms', 1)">+</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- OPTIONAL PRICE COMPARE -->
+          <div class="form-section-title">💰 Compare Your Price (Optional)</div>
+          <div class="compare-card" id="compareCard">
+            <label class="form-label mb-1">Your Current / Expected Rent (₹)</label>
+            <input id="user_price_input" type="text" inputmode="numeric" pattern="[0-9]*"
+                   name="your_price" class="form-control" placeholder="e.g. 55000"
+                   style="background: white;">
+            <div class="mt-2" style="font-size:.78rem; color:#64748b;">
+              <i class="bi bi-info-circle me-1"></i>
+              Leave blank to just get the market rent prediction.
+              Enter your rent to get a <strong>Fair / Overpriced / Underpriced</strong> verdict.
+            </div>
+          </div>
+
+          <button type="submit" class="btn-predict mt-4">
+            <i class="bi bi-lightning-fill me-2"></i> Get My Rent Estimate
+          </button>
+
+        </form>
+      </div>
+    </div>
+
+    <!-- RIGHT SIDEBAR -->
+    <div class="col-lg-5 d-flex flex-column gap-3">
+
+      <!-- CSV Upload Card -->
+      <div class="upload-card">
+        <h6 class="fw-bold mb-1"><i class="bi bi-upload me-2 text-success"></i>Bulk Upload</h6>
+        <p class="small text-muted mb-3">Have multiple properties? Upload a CSV to get predictions for all of them at once.</p>
+        <form action="/predict" method="POST" enctype="multipart/form-data">
+          <div class="upload-zone" onclick="document.getElementById('csvFile').click()">
+            <i class="bi bi-file-earmark-spreadsheet"></i>
+            <div class="fw-600" style="font-size:.88rem; font-weight:600; color:#475569;">Click to upload CSV</div>
+            <div style="font-size:.75rem; color:#94a3b8; margin-top:4px;">or drag and drop here</div>
+          </div>
+          <input type="file" id="csvFile" name="file" accept=".csv" style="display:none;"
+                 onchange="document.getElementById('fileLabel').textContent = this.files[0]?.name || 'No file chosen'">
+          <div id="fileLabel" class="mt-2 text-center" style="font-size:.78rem; color:#64748b;">No file chosen</div>
+          <button type="submit" class="btn-upload mt-3">
+            <i class="bi bi-bar-chart me-2"></i>Upload & Predict All
+          </button>
+        </form>
+        <div class="mt-3 p-2" style="background:#f8fafc; border-radius:8px; font-size:.73rem; color:#64748b;">
+          <strong>Required columns:</strong> zone, area_sqft, bedrooms, bathrooms
+        </div>
+      </div>
+
+      <!-- Quick Tips Card -->
+      <div class="tip-card">
+        <h6 class="fw-bold mb-2" style="font-size:.88rem;"><i class="bi bi-lightbulb-fill me-2" style="color:#d97706;"></i>Quick Tips</h6>
+        <ul class="mb-0" style="font-size:.8rem; color:#78350f; padding-left: 16px;">
+          <li class="mb-1">South Mumbai is the most expensive zone — ₹152/sqft average.</li>
+          <li class="mb-1">Navi Mumbai offers the best value — ₹50/sqft average.</li>
+          <li class="mb-1">Furnished properties typically rent 15–25% higher than unfurnished.</li>
+          <li>Prices within ±5% of prediction are considered fair market value.</li>
+        </ul>
+      </div>
+
+      <!-- Zone Quick Reference -->
+      <div style="background:white; border-radius:16px; border:1px solid #e2e8f0; padding:20px;">
+        <h6 class="fw-bold mb-3" style="font-size:.88rem;"><i class="bi bi-map me-2 text-primary"></i>Zone Price Reference</h6>
+        {% for z in bigdata.zones %}
+        <div class="d-flex justify-content-between align-items-center py-2" style="border-bottom: 1px solid #f1f5f9;">
+          <span style="font-size:.82rem; font-weight:500;">{{ z.zone }}</span>
+          <span style="font-size:.82rem; font-weight:700; color:#2563eb;">{{ z.avg_rent }}</span>
+        </div>
+        {% endfor %}
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  // Counter buttons
+  function counterChange(field, delta) {
+    const el = document.getElementById(field);
+    let val = parseInt(el.value) + delta;
+    if (field === 'bedrooms') val = Math.min(Math.max(val, 1), 6);
+    if (field === 'bathrooms') val = Math.min(Math.max(val, 1), 5);
+    el.value = val;
+  }
+
+  // Highlight compare card when user types a price
+  const priceInput = document.getElementById('user_price_input');
+  const compareCard = document.getElementById('compareCard');
+  priceInput.addEventListener('input', () => {
+    compareCard.classList.toggle('active', priceInput.value.trim() !== '');
+  });
+
+  // Digit-only inputs
+  function digitOnly(el) {
+    el.addEventListener('keydown', (e) => {
+      const allowed = ["Backspace","Delete","ArrowLeft","ArrowRight","Tab","Home","End"];
+      if (allowed.includes(e.key) || e.ctrlKey || e.metaKey) return;
+      if (/^[0-9]$/.test(e.key)) return;
+      e.preventDefault();
+    });
+    el.addEventListener('paste', (e) => {
+      e.preventDefault();
+      const text = (e.clipboardData.getData('text') || '').replace(/\D+/g, '');
+      document.execCommand("insertText", false, text);
+    });
+    el.addEventListener('wheel', (e) => e.preventDefault(), { passive: false });
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    ['area_input', 'user_price_input'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) digitOnly(el);
+    });
+
+    // CSV file picker drag-over styling
+    const uploadZone = document.querySelector('.upload-zone');
+    uploadZone.addEventListener('dragover', (e) => { e.preventDefault(); uploadZone.style.borderColor = '#2563eb'; });
+    uploadZone.addEventListener('dragleave', () => { uploadZone.style.borderColor = ''; });
+    uploadZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      const file = e.dataTransfer.files[0];
+      if (file) {
+        document.getElementById('csvFile').files = e.dataTransfer.files;
+        document.getElementById('fileLabel').textContent = file.name;
+        uploadZone.style.borderColor = '#16a34a';
+      }
+    });
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

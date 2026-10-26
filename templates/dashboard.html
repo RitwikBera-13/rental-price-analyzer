@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Mumbai Rent Analyzer</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    * { font-family: 'Inter', sans-serif; }
+
+    body { background: #f8fafc; color: #1e293b; }
+
+    /* ── NAVBAR ── */
+    .navbar-brand { font-weight: 800; font-size: 1.2rem; letter-spacing: -0.3px; }
+    .nav-cta { background: #2563eb; color: #fff !important; border-radius: 8px; padding: 8px 18px !important; font-weight: 600; transition: background .2s; }
+    .nav-cta:hover { background: #1d4ed8 !important; }
+
+    /* ── HERO ── */
+    .hero {
+      background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0c4a6e 100%);
+      border-radius: 20px;
+      padding: 64px 48px;
+      color: white;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: -60px; right: -60px;
+      width: 300px; height: 300px;
+      background: rgba(37,99,235,0.25);
+      border-radius: 50%;
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      bottom: -80px; left: 20%;
+      width: 200px; height: 200px;
+      background: rgba(14,165,233,0.15);
+      border-radius: 50%;
+    }
+    .hero h1 { font-size: 2.6rem; font-weight: 800; line-height: 1.15; letter-spacing: -0.5px; }
+    .hero p  { font-size: 1.1rem; opacity: 0.85; max-width: 520px; }
+    .hero-badge { background: rgba(34,197,94,0.2); border: 1px solid rgba(34,197,94,0.4); color: #4ade80; border-radius: 20px; padding: 5px 14px; font-size: 0.78rem; font-weight: 600; display: inline-block; margin-bottom: 16px; }
+    .btn-hero { background: #2563eb; color: white; border: none; border-radius: 10px; padding: 14px 28px; font-weight: 700; font-size: 1rem; transition: all .2s; }
+    .btn-hero:hover { background: #1d4ed8; color: white; transform: translateY(-1px); }
+    .btn-hero-outline { background: transparent; color: white; border: 2px solid rgba(255,255,255,0.3); border-radius: 10px; padding: 12px 26px; font-weight: 600; font-size: 1rem; transition: all .2s; }
+    .btn-hero-outline:hover { background: rgba(255,255,255,0.1); color: white; border-color: rgba(255,255,255,0.6); }
+    .hero-stat { background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12); border-radius: 12px; padding: 16px 20px; }
+    .hero-stat-val { font-size: 1.5rem; font-weight: 800; color: #38bdf8; }
+    .hero-stat-label { font-size: 0.78rem; opacity: 0.7; margin-top: 2px; }
+
+    /* ── STAT TILES ── */
+    .stat-card { background: white; border-radius: 16px; padding: 24px; border: 1px solid #e2e8f0; transition: box-shadow .2s, transform .2s; }
+    .stat-card:hover { box-shadow: 0 8px 30px rgba(0,0,0,0.08); transform: translateY(-2px); }
+    .stat-card .icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; margin-bottom: 12px; }
+    .stat-card .val { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.5px; }
+    .stat-card .label { font-size: 0.8rem; font-weight: 600; color: #64748b; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+    .stat-card .sub { font-size: 0.82rem; color: #94a3b8; margin-top: 4px; }
+
+    /* ── ZONE TABLE ── */
+    .section-card { background: white; border-radius: 16px; border: 1px solid #e2e8f0; overflow: hidden; }
+    .section-header { padding: 20px 24px; border-bottom: 1px solid #f1f5f9; }
+    .section-header h5 { font-weight: 700; font-size: 1rem; margin: 0; }
+    .section-header p { font-size: 0.82rem; color: #64748b; margin: 2px 0 0; }
+    .zone-table th { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; color: #64748b; background: #f8fafc; border: none; padding: 12px 16px; }
+    .zone-table td { padding: 14px 16px; font-size: 0.88rem; border-color: #f1f5f9; vertical-align: middle; }
+    .zone-table tr:hover td { background: #f8fafc; }
+    .zone-dot { width: 10px; height: 10px; border-radius: 50%; display: inline-block; margin-right: 8px; }
+    .tier-pill { border-radius: 20px; padding: 4px 10px; font-size: 0.72rem; font-weight: 700; }
+
+    /* ── PREDICT CTA CARD ── */
+    .cta-card { background: linear-gradient(135deg, #2563eb, #0ea5e9); border-radius: 16px; padding: 28px; color: white; border: none; }
+    .cta-card h5 { font-weight: 800; font-size: 1.1rem; }
+
+    /* ── ACCURACY CARD ── */
+    .accuracy-card { background: white; border-radius: 16px; border: 1px solid #e2e8f0; padding: 24px; }
+    .acc-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f1f5f9; }
+    .acc-row:last-child { border-bottom: none; }
+    .acc-label { font-size: 0.82rem; color: #64748b; font-weight: 500; }
+    .acc-val { font-size: 0.95rem; font-weight: 700; color: #1e293b; }
+    .acc-badge { background: #dcfce7; color: #16a34a; border-radius: 20px; padding: 3px 10px; font-size: 0.75rem; font-weight: 700; }
+
+    /* ── FOOTER ── */
+    footer { border-top: 1px solid #e2e8f0; margin-top: 60px; padding: 28px 0; text-align: center; color: #94a3b8; font-size: 0.82rem; }
+    footer a { color: #64748b; text-decoration: none; }
+    footer a:hover { color: #2563eb; }
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav class="navbar navbar-light bg-white border-bottom sticky-top" style="padding: 12px 0;">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="/">
+      <span style="font-size:1.4rem;">🏠</span>
+      <span>Mumbai <span style="color:#2563eb;">Rent</span> Analyzer</span>
+    </a>
+    <div class="d-flex align-items-center gap-3">
+      <a href="#zones" class="text-decoration-none text-secondary fw-500 d-none d-md-block" style="font-size:.9rem; font-weight:500;">Market Zones</a>
+      <a href="/index" class="nav-cta text-decoration-none" style="font-size:.9rem;">
+        <i class="bi bi-search me-1"></i> Check My Rent
+      </a>
+    </div>
+  </div>
+</nav>
+
+<div class="container py-4" style="max-width: 1100px;">
+
+  <!-- ── HERO ── -->
+  <section class="hero mb-4">
+    <div class="row align-items-center g-4" style="position:relative; z-index:2;">
+      <div class="col-lg-7">
+        <div class="hero-badge"><i class="bi bi-check-circle-fill me-1"></i> Mumbai's Rental Market Intelligence</div>
+        <h1>Find the Fair Rent<br>for Any Mumbai Home</h1>
+        <p class="mt-3">Get an instant AI-powered prediction on what your property should rent for — and see if your current price is fair, underpriced, or overpriced.</p>
+        <div class="d-flex gap-3 mt-4 flex-wrap">
+          <a href="/index" class="btn-hero text-decoration-none">
+            <i class="bi bi-lightning-fill me-1"></i> Predict My Rent
+          </a>
+          <a href="#zones" class="btn-hero-outline text-decoration-none">Explore Zones ↓</a>
+        </div>
+      </div>
+      <div class="col-lg-5">
+        <div class="row g-3">
+          <div class="col-6">
+            <div class="hero-stat">
+              <div class="hero-stat-val">₹96,795</div>
+              <div class="hero-stat-label">Avg. Mumbai Rent</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="hero-stat">
+              <div class="hero-stat-val">₹84/sqft</div>
+              <div class="hero-stat-label">City Avg. Price/SqFt</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="hero-stat">
+              <div class="hero-stat-val">5 Zones</div>
+              <div class="hero-stat-label">Areas Covered</div>
+            </div>
+          </div>
+          <div class="col-6">
+            <div class="hero-stat">
+              <div class="hero-stat-val">92.8%</div>
+              <div class="hero-stat-label">Prediction Accuracy</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── MARKET OVERVIEW TILES ── -->
+  <div class="row g-3 mb-4">
+    <div class="col-md-3 col-sm-6">
+      <div class="stat-card">
+        <div class="icon" style="background:#eff6ff; color:#2563eb;"><i class="bi bi-buildings"></i></div>
+        <div class="label">Properties Analyzed</div>
+        <div class="val" style="color:#2563eb;">{{ bigdata.total_properties }}</div>
+        <div class="sub">Mumbai rental listings</div>
+      </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+      <div class="stat-card">
+        <div class="icon" style="background:#f0fdf4; color:#16a34a;"><i class="bi bi-cash-stack"></i></div>
+        <div class="label">Average Rent</div>
+        <div class="val" style="color:#16a34a;">{{ bigdata.avg_rent }}</div>
+        <div class="sub">Median: {{ bigdata.median_rent }}</div>
+      </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+      <div class="stat-card">
+        <div class="icon" style="background:#faf5ff; color:#7c3aed;"><i class="bi bi-rulers"></i></div>
+        <div class="label">Avg. Price / SqFt</div>
+        <div class="val" style="color:#7c3aed;">{{ bigdata.avg_psf }}</div>
+        <div class="sub">Across all zones</div>
+      </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+      <div class="stat-card">
+        <div class="icon" style="background:#fff7ed; color:#ea580c;"><i class="bi bi-graph-up-arrow"></i></div>
+        <div class="label">AI Accuracy</div>
+        <div class="val" style="color:#ea580c;">{{ bigdata.r2_score }}</div>
+        <div class="sub">R² Score (higher = better)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ZONE TABLE + SIDEBAR ── -->
+  <div class="row g-3 mb-4" id="zones">
+
+    <!-- Zone Market Table -->
+    <div class="col-lg-8">
+      <div class="section-card">
+        <div class="section-header">
+          <h5><i class="bi bi-map me-2 text-primary"></i>Mumbai Zone Price Guide</h5>
+          <p>Live market pricing across Mumbai's 5 major rental zones</p>
+        </div>
+        <div class="table-responsive">
+          <table class="table zone-table mb-0">
+            <thead>
+              <tr>
+                <th>Zone</th>
+                <th>Avg. Rent</th>
+                <th>Price / SqFt</th>
+                <th>Market Tier</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% set colors = ['#2563eb','#7c3aed','#0891b2','#16a34a','#ea580c'] %}
+              {% for z in bigdata.zones %}
+              <tr>
+                <td>
+                  <span class="zone-dot" style="background:{{ colors[loop.index0] }};"></span>
+                  <span class="fw-600" style="font-weight:600;">{{ z.zone }}</span>
+                </td>
+                <td class="fw-bold" style="color:#1e293b;">{{ z.avg_rent }}</td>
+                <td style="color:#64748b;">{{ z.psf }}</td>
+                <td>
+                  {% if z.tier == 'Premium' %}
+                    <span class="tier-pill" style="background:#fef2f2; color:#dc2626;">🔴 Premium</span>
+                  {% elif z.tier == 'Mid-High' %}
+                    <span class="tier-pill" style="background:#fffbeb; color:#d97706;">🟡 Mid-High</span>
+                  {% elif z.tier == 'Mid' %}
+                    <span class="tier-pill" style="background:#eff6ff; color:#2563eb;">🔵 Mid Range</span>
+                  {% elif z.tier == 'Affordable' %}
+                    <span class="tier-pill" style="background:#f0fdf4; color:#16a34a;">🟢 Affordable</span>
+                  {% else %}
+                    <span class="tier-pill" style="background:#f8fafc; color:#64748b;">⚪ Budget</span>
+                  {% endif %}
+                </td>
+                <td>
+                  <a href="/index" class="btn btn-sm" style="background:#eff6ff; color:#2563eb; border:none; border-radius:8px; font-weight:600; font-size:.75rem;">
+                    Check →
+                  </a>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="col-lg-4 d-flex flex-column gap-3">
+
+      <!-- CTA Card -->
+      <div class="cta-card">
+        <h5>🔍 Is Your Rent Fair?</h5>
+        <p class="small mt-2 mb-3" style="opacity:.85;">Enter your property details and instantly find out if you're paying the right price for your Mumbai rental.</p>
+        <a href="/index" class="btn btn-light w-100 fw-bold" style="border-radius:10px;">
+          Get Free Rent Estimate →
+        </a>
+      </div>
+
+      <!-- AI Accuracy Card -->
+      <div class="accuracy-card">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+          <h6 class="fw-bold mb-0" style="font-size:.95rem;"><i class="bi bi-robot me-2 text-primary"></i>AI Model Accuracy</h6>
+          <span class="acc-badge">Verified</span>
+        </div>
+        <div class="acc-row">
+          <span class="acc-label">Accuracy Score (R²)</span>
+          <span class="acc-val">{{ bigdata.r2_score }}</span>
+        </div>
+        <div class="acc-row">
+          <span class="acc-label">Avg. Error (MAE)</span>
+          <span class="acc-val">{{ bigdata.mae }}</span>
+        </div>
+        <div class="acc-row">
+          <span class="acc-label">Error Range (RMSE)</span>
+          <span class="acc-val">{{ bigdata.rmse }}</span>
+        </div>
+        <p class="mt-3 mb-0" style="font-size:.75rem; color:#94a3b8;">Model trained on real Mumbai rental market data.</p>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── RECENT PREDICTIONS (only if data exists) ── -->
+  {% if recent and recent|length > 0 %}
+  <div class="section-card mb-4">
+    <div class="section-header">
+      <h5><i class="bi bi-clock-history me-2 text-secondary"></i>Recent Lookups</h5>
+      <p>Your recent rent predictions</p>
+    </div>
+    <div class="table-responsive">
+      <table class="table zone-table mb-0">
+        <thead>
+          <tr>
+            {% for col in recent[0].keys() %}
+              <th>{{ col }}</th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in recent %}
+            <tr>
+              {% for val in row.values() %}
+                <td>{{ val }}</td>
+              {% endfor %}
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- ── HOW IT WORKS ── -->
+  <div class="row g-3 mb-4">
+    <div class="col-12">
+      <h6 class="fw-bold text-center mb-4" style="color:#64748b; text-transform:uppercase; letter-spacing:.5px; font-size:.78rem;">How It Works</h6>
+    </div>
+    <div class="col-md-4">
+      <div class="stat-card text-center">
+        <div class="icon mx-auto mb-3" style="background:#eff6ff; color:#2563eb; width:56px; height:56px; font-size:1.5rem;"><i class="bi bi-1-circle-fill"></i></div>
+        <h6 class="fw-bold">Enter Property Details</h6>
+        <p class="small text-muted mb-0">Tell us the zone, area (sqft), bedrooms, and bathrooms of your Mumbai property.</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="stat-card text-center">
+        <div class="icon mx-auto mb-3" style="background:#f0fdf4; color:#16a34a; width:56px; height:56px; font-size:1.5rem;"><i class="bi bi-2-circle-fill"></i></div>
+        <h6 class="fw-bold">AI Calculates Market Rent</h6>
+        <p class="small text-muted mb-0">Our model analyses thousands of real Mumbai listings to predict the fair market rent instantly.</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="stat-card text-center">
+        <div class="icon mx-auto mb-3" style="background:#faf5ff; color:#7c3aed; width:56px; height:56px; font-size:1.5rem;"><i class="bi bi-3-circle-fill"></i></div>
+        <h6 class="fw-bold">Get Your Verdict</h6>
+        <p class="small text-muted mb-0">See if your rent is fair, overpriced, or underpriced — with a clear suggestion on what to do.</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="mb-2">
+      <span style="font-size:1.1rem;">🏠</span>
+      <strong style="color:#475569;">Mumbai Rent Analyzer</strong>
+    </div>
+    <p style="margin:0;">AI-powered rental price intelligence for Mumbai's property market.</p>
+    <div class="mt-2 d-flex justify-content-center gap-4">
+      <a href="/">Dashboard</a>
+      <a href="/index">Predict Rent</a>
+    </div>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
